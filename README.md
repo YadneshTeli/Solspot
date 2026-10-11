@@ -59,12 +59,18 @@ flowchart TD
 
 ---
 
+## 🌐 Live Demo & Deployment
+- **Live Web App**: [https://solspot.onrender.com](https://solspot.onrender.com)
+- **API Health**: [https://solspot.onrender.com/api/health](https://solspot.onrender.com/api/health)
+
+---
+
 ## 🚀 Quickstart & Local Setup
 
 ### 1. Clone & Enter Directory
 ```bash
-git clone https://github.com/your-username/solspot.git
-cd solspot
+git clone https://github.com/YadneshTeli/Solspot.git
+cd Solspot
 ```
 
 ### 2. Set Up Virtual Environment & Dependencies
