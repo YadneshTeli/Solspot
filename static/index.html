@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SolSpot — The Anti-Burnout Natural Light Optimizer & Touch Grass Window Finder</title>
+  <meta name="description" content="Discover your peak 20-minute outdoor circadian daylight window using TabPFN tabular AI and Gemma 2 sensory micro-quests. Build for Hacktoberfest Touch Grass challenge.">
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="theme-dark">
+  <!-- Dynamic Atmospheric Background Glow -->
+  <div class="ambient-glow glow-sun" id="ambientSunGlow"></div>
+  <div class="ambient-glow glow-nature" id="ambientNatureGlow"></div>
+
+  <!-- Header / Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5" fill="url(#sunGrad)"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor"/>
+            <defs>
+              <linearGradient id="sunGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#fbbf24"/>
+                <stop offset="100%" stop-color="#f59e0b"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">SolSpot</h1>
+          <p class="brand-tagline">Anti-Burnout Natural Light Optimizer</p>
+        </div>
+      </div>
+
+      <!-- Search & Geolocation Bar -->
+      <div class="search-section">
+        <div class="search-bar">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="cityInput" placeholder="Search city or use GPS..." autocomplete="off">
+          <button id="geoBtn" class="geo-btn" title="Use current GPS location">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+            </svg>
+            <span>Locate</span>
+          </button>
+        </div>
+        <div id="searchResults" class="search-dropdown hidden"></div>
+      </div>
+
+      <!-- Quick Stats & Badges -->
+      <div class="header-badges">
+        <span class="badge badge-hf" title="Hacktoberfest Week 1: Touch Grass">🌿 #hf26challenge</span>
+        <button id="streakBadge" class="badge badge-streak" title="Your outdoor session streak">🔥 <span id="streakCount">0</span> Days</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Container -->
+  <main class="main-layout">
+    
+    <!-- Top Hero Section: The Peak Touch Grass Window -->
+    <section class="hero-window-card">
+      <div class="card-glow"></div>
+      <div class="window-content">
+        <div class="window-header">
+          <div class="window-chip">
+            <span class="pulse-dot"></span>
+            <span>AI Circadian Recommendation</span>
+          </div>
+          <div class="current-location-chip" id="locationChip">
+            📍 Detecting Location...
+          </div>
+        </div>
+
+        <div class="window-main-grid">
+          <div class="window-primary">
+            <span class="window-label">OPTIMAL OUTDOOR LIGHT WINDOW</span>
+            <div class="window-time-display" id="windowTime">Calculating...</div>
+            <p class="window-summary" id="windowSummary">
+              Analyzing solar irradiance, blue-light ratio, UV risk, and cloud cover...
+            </p>
+
+            <div class="window-action-row">
+              <button id="activateGrassBtn" class="btn-primary-action">
+                <span class="btn-icon">🌿</span>
+                <span>Activate Grass Mode (Step Outside)</span>
+              </button>
+              <button id="setReminderBtn" class="btn-secondary-action">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <span>Notify Me</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="window-metrics-radial">
+            <div class="score-circle-container">
+              <svg class="score-circle" viewBox="0 0 120 120">
+                <circle class="score-bg" cx="60" cy="60" r="52"></circle>
+                <circle class="score-progress" id="scoreRing" cx="60" cy="60" r="52"></circle>
+              </svg>
+              <div class="score-inner">
+                <span class="score-number" id="peakScoreVal">--</span>
+                <span class="score-caption">Circadian Index</span>
+              </div>
+            </div>
+            <div class="quick-conditions" id="quickConditions">
+              <div class="cond-item"><span class="cond-icon">☀️</span> <span id="quickLux">-- lux</span></div>
+              <div class="cond-item"><span class="cond-icon">🌡️</span> <span id="quickTemp">--°C</span></div>
+              <div class="cond-item"><span class="cond-icon">🛡️</span> <span id="quickUv">UV --</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Circadian Sun Arc & Timeline -->
+    <section class="sun-arc-section card">
+      <div class="section-title-bar">
+        <div>
+          <h2 class="section-heading">Solar Trajectory & Hourly Daylight Index</h2>
+          <p class="section-subheading">Scored with TabPFN transformer zero-shot tabular inference</p>
+        </div>
+        <div class="legend-row">
+          <span class="legend-pill golden">🌟 Optimal Window</span>
+          <span class="legend-pill good">🌿 Good Ambient</span>
+          <span class="legend-pill uv">⚠️ UV Caution</span>
+        </div>
+      </div>
+
+      <!-- Visual Solar Arc Canvas / Interactive Diagram -->
+      <div class="arc-container">
+        <canvas id="solarArcCanvas" width="900" height="180"></canvas>
+      </div>
+
+      <!-- Hourly Score Cards Horizontal Scroller -->
+      <div class="hourly-strip" id="hourlyStrip">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- Two-Column Feature Area: Gemma Micro-Quest & TabPFN Biological Breakdown -->
+    <div class="features-dual-grid">
+      
+      <!-- Gemma Micro-Quest Card -->
+      <section class="card quest-card">
+        <div class="card-header">
+          <div class="model-badge">
+            <span class="model-tag">Google Gemma 2 (2B-IT)</span>
+            <span class="status-indicator live">Prompt Engine</span>
+          </div>
+          <button id="refreshQuestBtn" class="refresh-btn" title="Generate another quest">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 4v6h-6M1 20v-6h6"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+          </button>
+        </div>
+
+        <h3 class="quest-title">Your 60-Second Sensory Micro-Quest</h3>
+        <p class="quest-intro">Gemma generates grounding outdoor tasks designed to engage non-screen senses:</p>
+
+        <div class="quest-bubble">
+          <p class="quest-text" id="questText">Loading your weather-calibrated micro-quest...</p>
+        </div>
+
+        <div class="quest-footer">
+          <div class="sensory-tags">
+            <span class="stag">🌿 Proprioception</span>
+            <span class="stag">🌬️ Skin Thermal</span>
+            <span class="stag">👁️ 20-20-20 Rule</span>
+          </div>
+          <div class="quest-rule">
+            <span>⏱️ Screen off policy</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- TabPFN Biological Breakdown -->
+      <section class="card ai-breakdown-card">
+        <div class="card-header">
+          <div class="model-badge">
+            <span class="model-tag">Prior Labs TabPFN</span>
+            <span class="status-indicator ready" id="tabpfnStatusChip">Zero-Shot Tabular</span>
+          </div>
+          <span class="open-badge">Open Source AI</span>
+        </div>
+
+        <h3 class="breakdown-title">Chronobiology Feature Matrix</h3>
+        <p class="breakdown-subtitle">How TabPFN weighs tabular atmospheric features without manual hyperparameter tuning:</p>
+
+        <div class="factors-list">
+          <div class="factor-row">
+            <div class="factor-meta">
+              <span class="factor-name">Blue-Spectrum (480nm) Cortisol Sync</span>
+              <span class="factor-val" id="factorBlue">Optimal (Early Day)</span>
+            </div>
+            <div class="factor-bar"><div class="factor-fill fill-blue" style="width: 88%;"></div></div>
+          </div>
+
+          <div class="factor-row">
+            <div class="factor-meta">
+              <span class="factor-name">Vitamin D Synthesis (UVB Efficiency)</span>
+              <span class="factor-val" id="factorVitD">Safe / High Benefit</span>
+            </div>
+            <div class="factor-bar"><div class="factor-fill fill-amber" style="width: 74%;"></div></div>
+          </div>
+
+          <div class="factor-row">
+            <div class="factor-meta">
+              <span class="factor-name">Diffuse Cloud Filtration (Lux Retention)</span>
+              <span class="factor-val" id="factorClouds">Moderate Filtering</span>
+            </div>
+            <div class="factor-bar"><div class="factor-fill fill-cyan" style="width: 65%;"></div></div>
+          </div>
+
+          <div class="factor-row">
+            <div class="factor-meta">
+              <span class="factor-name">Thermal Comfort & Wind Chill</span>
+              <span class="factor-val" id="factorThermal">Comfortable</span>
+            </div>
+            <div class="factor-bar"><div class="factor-fill fill-emerald" style="width: 82%;"></div></div>
+          </div>
+        </div>
+
+        <div class="privacy-callout">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <div>
+            <strong>100% Private & Open:</strong> Open-Meteo queries require zero API keys or user IDs. TabPFN tabular models run locally without uploading your coordinates to ad trackers.
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Community & Hacktoberfest Footer -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <p>Built for <strong>Hacktoberfest Open-Source AI Challenge: Week 1 ("Touch Grass")</strong>.</p>
+        <p class="footer-links">
+          <span>Powered by <strong>Prior Labs TabPFN</strong> & <strong>Google Gemma 2</strong></span> •
+          <span>Open-Meteo Solar API</span> •
+          <a href="https://dev.to/challenges/hf26" target="_blank" rel="noopener">HF26 Challenge Hub</a>
+        </p>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Full-Screen "Grass Mode" Overlay -->
+  <div id="grassModeModal" class="grass-modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-container">
+      <div class="ambient-leaf"></div>
+      
+      <div class="modal-header">
+        <span class="modal-chip">🌿 GRASS MODE ENGAGED</span>
+        <button id="closeGrassModalBtn" class="close-btn" title="Exit Grass Mode">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="breathing-circle-wrapper">
+          <div class="breathing-circle" id="breathingCircle">
+            <div class="breathing-inner">
+              <span class="breathe-instruction" id="breatheText">Inhale</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="timer-display" id="modalTimer">20:00</div>
+        
+        <h2 class="modal-heading">Phone Face Down. Eyes to the Horizon.</h2>
+        <p class="modal-subheading" id="modalQuestPrompt">
+          Step away from your workstation. Notice the breeze, relax your eyes on distant objects, and let natural photons reset your circadian clock.
+        </p>
+
+        <div class="modal-audio-controls">
+          <button id="toggleAudioBtn" class="audio-btn">
+            <span id="audioIcon">🔈</span> <span id="audioLabel">Play Gentle Nature Ambient</span>
+          </button>
+        </div>
+
+        <div class="modal-buttons">
+          <button id="finishGrassBtn" class="btn-complete-session">
+            <span>✨ I Touched Grass Today</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session Complete Celebration Modal -->
+  <div id="celebrationModal" class="celebration-modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="celebrate-card">
+      <div class="celebrate-emoji">🌱</div>
+      <h2>Circadian Reset Complete!</h2>
+      <p>You stepped away from the monitor and soaked in natural daylight. Your streak is now <strong id="newStreakNum">1</strong> day(s).</p>
+      <div class="badge-award">
+        <span>🏆 Badge Unlocked: <strong>Natural Light Pioneer</strong></span>
+      </div>
+      <button id="closeCelebrationBtn" class="btn-primary-action">Back to SolSpot</button>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
